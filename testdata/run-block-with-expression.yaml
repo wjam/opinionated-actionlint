@@ -1,0 +1,11 @@
+on:
+  push: {}
+
+permissions: {}
+
+jobs:
+  ci:
+    runs-on: ubuntu-latest
+    steps:
+      - run: |
+          echo ${{ github.repository }}
