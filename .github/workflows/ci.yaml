@@ -24,8 +24,10 @@ jobs:
           go-version-file: 'go.mod'
       - name: Unit test
         run: go test -count=1 ./...
-      - name: Test this repository
-        run: go run .
+      - name: Test with this repository
+        run: |
+          echo "::add-matcher::.github/actionlint-matcher.json"
+          go run .
 
       - name: Extract metadata (tags, labels) for Docker
         id: meta

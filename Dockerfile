@@ -6,7 +6,7 @@ RUN go mod download
 
 COPY *.go ./
 ENV CGO_ENABLED 0
-RUN go build -o opinionated-actionlint -ldflags "-s -w" .
+RUN go build -o opinionated-actionlint -trimpath -ldflags "-s -w" .
 
 FROM koalaman/shellcheck-alpine:v0.10.0 as shellcheck
 
