@@ -2,6 +2,18 @@
 This is an extension to actionlint to add rules and configuration which is more opinionated than the default actionlint.
 
 ## Differences
+### Only available as a container image
+Simplifies distribution. Run locally by running `docker run -v $(pwd):/repo --workdir /repo ghcr.io/wjam/opinionated-actionlint:v0.1.0` or adding the following as GitHub workflow
+```yaml
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@ # etc
+      - run: echo "::add-matcher::.github/actionlint-matcher.json"
+      - uses: docker://ghcr.io/wjam/opinionated-actionlint:v0.1.0
+```
+
 ### Unable to ignore issues
 The only reason I came across for wanting to ignore issues was to format the output, which isn't required.
 

@@ -33,7 +33,7 @@ func runLinter(stdout io.Writer, args ...string) error {
 	flags := flag.NewFlagSet(args[0], flag.ExitOnError)
 	flags.SetOutput(stdout)
 	flags.StringVar(&opts.Shellcheck, "shellcheck", "shellcheck", "executable to use to run shellcheck")
-	flags.StringVar(&opts.ConfigFile, "config", "", "actionlint config file location")
+	flags.StringVar(&opts.ConfigFile, "config-file", "", "actionlint config file location")
 
 	if err := flags.Parse(args[1:]); err != nil {
 		return err
