@@ -4,11 +4,32 @@ updates:
     directory: "/"
     schedule:
       interval: "monthly"
+    groups:
+      minor-update:
+        patterns:
+          - "*"
+        update-types:
+          - "minor"
+          - "patch"
   - package-ecosystem: "gomod"
     directory: "/"
     schedule:
       interval: "monthly"
+    groups:
+      minor-update:
+        patterns:
+          - "*"
+        update-types:
+          - "minor"
+          - "patch"
   - package-ecosystem: docker
     directory: /
     schedule:
       interval: monthly
+    groups:
+      minor-update:
+        patterns:
+          - "*"
+        update-types:
+          - "minor"
+          - "patch"
