@@ -1,8 +1,10 @@
 module github.com/wjam/opinionated-actionlint
 
-go 1.22
+go 1.24
 
 require (
+	github.com/goyek/goyek/v2 v2.3.0
+	github.com/goyek/x v0.2.0
 	github.com/rhysd/actionlint v1.7.7
 	github.com/stretchr/testify v1.10.0
 )

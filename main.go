@@ -9,7 +9,7 @@ import (
 )
 
 func main() {
-	if err := runLinter(os.Stdout, os.Args...); err != nil {
+	if err := runLinter(os.Stdout, os.LookupEnv, os.Args...); err != nil {
 		if _, ok := err.(lintErrors); ok {
 			os.Exit(1)
 		}
@@ -17,7 +17,7 @@ func main() {
 	}
 }
 
-func runLinter(stdout io.Writer, args ...string) error {
+func runLinter(stdout io.Writer, env func(string) (string, bool), args ...string) error {
 	opts := &actionlint.LinterOptions{
 		LogWriter: stdout,
 		OnRulesCreated: func(rules []actionlint.Rule) []actionlint.Rule {
@@ -25,9 +25,13 @@ func runLinter(stdout io.Writer, args ...string) error {
 				newBanGitHubScriptAction(),
 				newBanRunBlockWithGitHubContext(),
 				newBanDefaultWorkflowPermissions(),
-				newPinAction(),
 			)
 		},
+	}
+
+	if _, ok := env("CI"); ok {
+		// https://github.com/actions/toolkit/issues/193#issuecomment-605394935
+		opts.Format = "{{range $err := .}}::error file={{$err.Filepath}},line={{$err.Line}},col={{$err.Column}}::{{$err.Message}}%0A```%0A{{replace $err.Snippet \"\\\\n\" \"%0A\"}}%0A```\\n{{end}}"
 	}
 
 	flags := flag.NewFlagSet(args[0], flag.ExitOnError)
