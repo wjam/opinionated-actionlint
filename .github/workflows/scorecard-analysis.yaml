@@ -1,4 +1,4 @@
-name: Scorecard analysis workflowN
+name: Scorecard analysis workflow
 on:
   push:
     # Only the default branch is supported.
