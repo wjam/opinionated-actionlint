@@ -1,0 +1,4 @@
+testdata/run-block-with-expression.yaml:10:9: use of GitHub context expressions within run blocks is not allowed [ban-run-block-with-github-context]
+   |
+10 |       - run: |
+   |         ^~~~

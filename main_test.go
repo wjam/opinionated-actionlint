@@ -1,11 +1,17 @@
 package main
 
 import (
+	"embed"
+	"errors"
 	"strings"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
+
+//go:embed testdata/*-output.txt
+var outputFiles embed.FS
 
 func TestRunLinter(t *testing.T) {
 	tests := []struct {
@@ -15,53 +21,47 @@ func TestRunLinter(t *testing.T) {
 		env    map[string]string
 	}{
 		{
-			file: "./testdata/default-permissions.yaml",
-			output: `./testdata/default-permissions.yaml:5:3: job should not use default or *-all workflow permissions [ban-default-workflow-permissions]
-  |
-5 |   ci:
-  |   ^~~
-`,
+			// Handled by ossf/scorecard-actino
+			file:   "testdata/default-permissions.yaml",
+			output: "testdata/default-permissions-output.txt",
+		},
+		{
+			file:   "testdata/permissions-defined-on-job.yaml",
+			output: "testdata/permissions-defined-on-job-output.txt",
+		},
+		{
+			file:   "testdata/read-all-permission-job.yaml",
+			output: "testdata/read-all-permission-job-output.txt",
 			err: lintErrors{
 				{
-					Message:  "job should not use default or *-all workflow permissions",
-					Filepath: "./testdata/default-permissions.yaml",
-					Line:     5,
-					Column:   3,
-					Kind:     "ban-default-workflow-permissions",
+					Message:  "job should not use *-all workflow permissions",
+					Filepath: "testdata/read-all-permission-job.yaml",
+					Line:     6,
+					Column:   5,
+					Kind:     "ban-all-workflow-permissions",
 				},
 			},
 		},
 		{
-			file: "./testdata/permissions-defined-on-job.yaml",
-		},
-		{
-			file: "./testdata/read-all-permission.yaml",
-			output: `./testdata/read-all-permission.yaml:7:3: job should not use default or *-all workflow permissions [ban-default-workflow-permissions]
-  |
-7 |   ci:
-  |   ^~~
-`,
+			file:   "testdata/read-all-permission-workflow.yaml",
+			output: "testdata/read-all-permission-workflow-output.txt",
 			err: lintErrors{
 				{
-					Message:  "job should not use default or *-all workflow permissions",
-					Filepath: "./testdata/read-all-permission.yaml",
-					Line:     7,
-					Column:   3,
-					Kind:     "ban-default-workflow-permissions",
+					Message:  "jobs should not use *-all workflow permissions",
+					Filepath: "testdata/read-all-permission-workflow.yaml",
+					Line:     4,
+					Column:   1,
+					Kind:     "ban-all-workflow-permissions",
 				},
 			},
 		},
 		{
-			file: "./testdata/run-block-with-expression.yaml",
-			output: `./testdata/run-block-with-expression.yaml:10:9: use of GitHub context expressions within run blocks is not allowed [ban-run-block-with-github-context]
-   |
-10 |       - run: |
-   |         ^~~~
-`,
+			file:   "testdata/run-block-with-expression.yaml",
+			output: "testdata/run-block-with-expression-output.txt",
 			err: lintErrors{
 				{
 					Message:  "use of GitHub context expressions within run blocks is not allowed",
-					Filepath: "./testdata/run-block-with-expression.yaml",
+					Filepath: "testdata/run-block-with-expression.yaml",
 					Line:     10,
 					Column:   9,
 					Kind:     "ban-run-block-with-github-context",
@@ -69,15 +69,15 @@ func TestRunLinter(t *testing.T) {
 			},
 		},
 		{
-			file: "./testdata/use-of-github-script.yaml",
+			file: "testdata/use-of-github-script.yaml",
 			env: map[string]string{
 				"CI": "true",
 			},
-			output: "::error file=./testdata/use-of-github-script.yaml,line=10,col=9::use of actions/github-script is not allowed%0A```%0A      - uses: actions/github-script@v7.0.1%0A        ^~~~~%0A```\n",
+			output: "testdata/use-of-github-script-output.txt",
 			err: lintErrors{
 				{
 					Message:  "use of actions/github-script is not allowed",
-					Filepath: "./testdata/use-of-github-script.yaml",
+					Filepath: "testdata/use-of-github-script.yaml",
 					Line:     10,
 					Column:   9,
 					Kind:     "ban-github-script",
@@ -89,18 +89,29 @@ func TestRunLinter(t *testing.T) {
 	for _, test := range tests {
 		t.Run(test.file, func(t *testing.T) {
 			var buf strings.Builder
-			err := runLinter(&buf, func(s string) (string, bool) {
+			actualErr := runLinter(&buf, func(s string) (string, bool) {
 				v, ok := test.env[s]
 				return v, ok
 			}, "actionlint", test.file)
 
-			assert.Equal(t, test.output, buf.String())
+			output, err := outputFiles.ReadFile(test.output)
+			require.NoError(t, err)
+
+			assert.Equal(t, string(output), buf.String())
 
 			if test.err == nil {
-				assert.Nil(t, err)
+				assert.Nil(t, actualErr)
 			} else {
-				assert.Equal(t, test.err, err)
+				assert.Equal(t, test.err, actualErr)
 			}
 		})
 	}
+}
+
+func TestLintErrors_Is(t *testing.T) {
+	var err error = lintErrors{
+		{},
+	}
+	v := errors.Is(err, lintErrors{})
+	assert.True(t, v)
 }

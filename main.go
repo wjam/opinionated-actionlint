@@ -1,6 +1,8 @@
 package main
 
 import (
+	_ "embed"
+	"errors"
 	"flag"
 	"io"
 	"os"
@@ -10,7 +12,7 @@ import (
 
 func main() {
 	if err := runLinter(os.Stdout, os.LookupEnv, os.Args...); err != nil {
-		if _, ok := err.(lintErrors); ok {
+		if errors.Is(err, lintErrors{}) {
 			os.Exit(1)
 		}
 		panic(err)
@@ -24,14 +26,14 @@ func runLinter(stdout io.Writer, env func(string) (string, bool), args ...string
 			return append(rules,
 				newBanGitHubScriptAction(),
 				newBanRunBlockWithGitHubContext(),
-				newBanDefaultWorkflowPermissions(),
+				newBanAllWorkflowPermissions(),
 			)
 		},
 	}
 
 	if _, ok := env("CI"); ok {
 		// https://github.com/actions/toolkit/issues/193#issuecomment-605394935
-		opts.Format = "{{range $err := .}}::error file={{$err.Filepath}},line={{$err.Line}},col={{$err.Column}}::{{$err.Message}}%0A```%0A{{replace $err.Snippet \"\\\\n\" \"%0A\"}}%0A```\\n{{end}}"
+		opts.Format = githubActionTmpl
 	}
 
 	flags := flag.NewFlagSet(args[0], flag.ExitOnError)
@@ -65,10 +67,18 @@ func runLinter(stdout io.Writer, env func(string) (string, bool), args ...string
 	return nil
 }
 
+//go:embed githubAction.go.tmpl
+var githubActionTmpl string
+
 var _ error = lintErrors{}
 
 type lintErrors []*actionlint.Error
 
 func (l lintErrors) Error() string {
 	return "failed"
+}
+
+func (l lintErrors) Is(err error) bool {
+	_, ok := err.(lintErrors)
+	return ok
 }

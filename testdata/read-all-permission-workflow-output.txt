@@ -1,0 +1,4 @@
+testdata/read-all-permission-workflow.yaml:4:1: jobs should not use *-all workflow permissions [ban-all-workflow-permissions]
+  |
+4 | permissions: read-all
+  | ^~~~~~~~~~~~

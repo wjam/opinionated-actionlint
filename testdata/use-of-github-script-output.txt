@@ -1,0 +1,1 @@
+::error file=testdata/use-of-github-script.yaml,line=10,col=9::use of actions/github-script is not allowed%0A```%0A      - uses: actions/github-script@v7.0.1%0A        ^~~~~%0A```
