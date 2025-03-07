@@ -1,0 +1,9 @@
+on:
+  push: {}
+
+jobs:
+  ci:
+    permissions: read-all
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo hello

@@ -6,7 +6,10 @@ import (
 
 func newBanRunBlockWithGitHubContext() actionlint.Rule {
 	return &banRunBlockWithGitHubContext{
-		actionlint.NewRuleBase("ban-run-block-with-github-context", "use environment variables to pass GitHub context values into run blocks"),
+		actionlint.NewRuleBase(
+			"ban-run-block-with-github-context",
+			"use environment variables to pass GitHub context values into run blocks",
+		),
 	}
 }
 
