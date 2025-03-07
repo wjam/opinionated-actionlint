@@ -1,8 +1,4 @@
 name: Security Scan
-permissions:
-  contents: read
-  security-events: write
-  pull-requests: read
 
 on:
   push:
@@ -14,10 +10,16 @@ on:
   schedule:
     - cron: '0 13 * * 4'
 
+permissions:
+  contents: read
+
 jobs:
   security:
 
     runs-on: ubuntu-latest
+    permissions:
+      security-events: write
+      pull-requests: read
 
     steps:
       - name: Checkout Repository
