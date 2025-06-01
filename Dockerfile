@@ -9,7 +9,7 @@ RUN go run ./build
 
 FROM koalaman/shellcheck-alpine:v0.10.0@sha256:5921d946dac740cbeec2fb1c898747b6105e585130cc7f0602eec9a10f7ddb63 as shellcheck
 
-FROM alpine:3.21@sha256:a8560b36e8b8210634f77d9f7f9efd7ffa463e380b75e2e74aff4511df3ef88c
+FROM alpine:3.22@sha256:8a1f59ffb675680d47db6337b49d22281a139e9d709335b492be023728e11715
 COPY --from=builder /src/bin/app /usr/local/bin/opinionated-actionlint
 COPY --from=shellcheck /bin/shellcheck /usr/local/bin/shellcheck
 
