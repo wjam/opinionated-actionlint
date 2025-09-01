@@ -6,7 +6,7 @@ require (
 	github.com/goyek/goyek/v2 v2.3.0
 	github.com/goyek/x v0.3.0
 	github.com/rhysd/actionlint v1.7.7
-	github.com/stretchr/testify v1.10.0
+	github.com/stretchr/testify v1.11.1
 )
 
 require (
