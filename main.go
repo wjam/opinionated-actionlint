@@ -27,6 +27,7 @@ func runLinter(stdout io.Writer, env func(string) (string, bool), args ...string
 				newBanGitHubScriptAction(),
 				newBanRunBlockWithGitHubContext(),
 				newBanAllWorkflowPermissions(),
+				newBanCheckoutWithPersistCredentials(),
 			)
 		},
 	}
