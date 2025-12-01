@@ -84,6 +84,36 @@ func TestRunLinter(t *testing.T) {
 				},
 			},
 		},
+		{
+			file:   "testdata/checkout-no-with.yaml",
+			output: "testdata/checkout-no-with-output.txt",
+			err: lintErrors{
+				{
+					Message:  "persist-credentials should be set to 'false' when using actions/checkout",
+					Filepath: "testdata/checkout-no-with.yaml",
+					Line:     10,
+					Column:   9,
+					Kind:     "ban-checkout-with-persist-credentials",
+				},
+			},
+		},
+		{
+			file:   "testdata/checkout-persist-credentials-false.yaml",
+			output: "testdata/checkout-persist-credentials-false-output.txt",
+		},
+		{
+			file:   "testdata/checkout-persist-credentials-true.yaml",
+			output: "testdata/checkout-persist-credentials-true-output.txt",
+			err: lintErrors{
+				{
+					Message:  "persist-credentials should be set to 'false' when using actions/checkout",
+					Filepath: "testdata/checkout-persist-credentials-true.yaml",
+					Line:     10,
+					Column:   9,
+					Kind:     "ban-checkout-with-persist-credentials",
+				},
+			},
+		},
 	}
 
 	for _, test := range tests {
