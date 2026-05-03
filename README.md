@@ -1,6 +1,9 @@
 # opinionated-actionlint
 This is an extension to [actionlint](https://github.com/rhysd/actionlint) to add rules and configuration which is more opinionated than the default actionlint.
 
+> [!IMPORTANT]
+> Repository archived. [zizmor](https://docs.zizmor.sh/) handles the additional checks plus more.
+
 ## TODO
 * Dependabot doesn't support updating Docker images referenced in `uses`. Convert to immutable GitHub action when it gets released - https://github.com/github/roadmap/issues/592
 * Consider using goreleaser to perform the release step when migrating to immutable GitHub action
